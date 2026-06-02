@@ -20,7 +20,7 @@ public class BinkaDecoderCore
 
     private class BinkaDecoder
     {
-        public float[] Table;
+        public float[]? Table;
         public int FrameSamples;
         public float Scale;
         public int OverlapSamples;
@@ -37,8 +37,8 @@ public class BinkaDecoderCore
     private int _sampleRate;
     private int _outputSamples;
     private BinkaDecoder[] _decoders = new BinkaDecoder[MaxDecoders];
-    private float[] _samples;
-    private float[] _overlap;
+    private float[]? _samples;
+    private float[]? _overlap;
     private int _decoderCount;
 
     public BinkaDecoderCore(int sampleRate, int channels, BinkaMode mode)
@@ -314,9 +314,9 @@ public class BinkaDecoderCore
             if (ok)
             {
                 if (isDct)
-                    BinkaTransform.TransformDct(coefs, cOff, dec.FrameSamples, dec.TransformSize, dec.Table);
+                    BinkaTransform.TransformDct(coefs, cOff, dec.FrameSamples, dec.TransformSize, dec.Table!);
                 else
-                    BinkaTransform.TransformRdft(coefs, cOff, dec.FrameSamples, dec.TransformSize, dec.Table);
+                    BinkaTransform.TransformRdft(coefs, cOff, dec.FrameSamples, dec.TransformSize, dec.Table!);
             }
             else
             {
@@ -360,7 +360,7 @@ public class BinkaDecoderCore
         for (int i = 0; i < _decoderCount; i++)
         {
             BinkaDecoder decoder = _decoders[i];
-            int bytesDone = DecodeFrameInternal(decoder, src, offset, remaining, _samples, samplesOff, _overlap, overlapOff);
+            int bytesDone = DecodeFrameInternal(decoder, src, offset, remaining, _samples!, samplesOff, _overlap!, overlapOff);
             if (bytesDone < 0) return bytesDone;
 
             samplesOff += decoder.FrameSamples * decoder.FrameChannels;
@@ -372,7 +372,7 @@ public class BinkaDecoderCore
         if (remaining > 4)
             return -remaining;
 
-        CopySamples(dst, _samples, _decoders[0].FrameSamples, _outputSamples, _channels);
+        CopySamples(dst, _samples!, _decoders[0].FrameSamples, _outputSamples, _channels);
         return _outputSamples;
     }
 

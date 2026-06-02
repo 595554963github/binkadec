@@ -9,7 +9,7 @@ public class Bitstream
         0x07ffffff, 0x0fffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff
     ];
 
-    private byte[] _buf;
+    private byte[]? _buf;
     private uint _bufSize;
     private uint _bMax;
     private uint _bOff;
@@ -67,19 +67,19 @@ public class Bitstream
         uint shift = _bOff % 8;
         uint mask = MaskTableLsb[bits];
 
-        uint val = (uint)(_buf[pos + 0] >> (int)shift);
+        uint val = (uint)(_buf![pos + 0] >> (int)shift);
         if (bits + shift > 8)
         {
-            val |= (uint)(_buf[pos + 1] << (int)(8u - shift));
+            val |= (uint)(_buf![pos + 1] << (int)(8u - shift));
             if (bits + shift > 16)
             {
-                val |= (uint)(_buf[pos + 2] << (int)(16u - shift));
+                val |= (uint)(_buf![pos + 2] << (int)(16u - shift));
                 if (bits + shift > 24)
                 {
-                    val |= (uint)(_buf[pos + 3] << (int)(24u - shift));
+                    val |= (uint)(_buf![pos + 3] << (int)(24u - shift));
                     if (bits + shift > 32)
                     {
-                        val |= (uint)(_buf[pos + 4] << (int)(32u - shift));
+                        val |= (uint)(_buf![pos + 4] << (int)(32u - shift));
                     }
                 }
             }
@@ -109,19 +109,19 @@ public class Bitstream
         uint shift = _bOff % 8;
         uint mask = (1u << (int)shift) - 1;
 
-        _buf[pos + 0] = (byte)((value << (int)shift) | (_buf[pos + 0] & mask));
+        _buf![pos + 0] = (byte)((value << (int)shift) | (_buf![pos + 0] & mask));
         if (bits + shift > 8)
         {
-            _buf[pos + 1] = (byte)(value >> (int)(8 - shift));
+            _buf![pos + 1] = (byte)(value >> (int)(8 - shift));
             if (bits + shift > 16)
             {
-                _buf[pos + 2] = (byte)(value >> (int)(16 - shift));
+                _buf![pos + 2] = (byte)(value >> (int)(16 - shift));
                 if (bits + shift > 24)
                 {
-                    _buf[pos + 3] = (byte)(value >> (int)(24 - shift));
+                    _buf![pos + 3] = (byte)(value >> (int)(24 - shift));
                     if (bits + shift > 32)
                     {
-                        _buf[pos + 4] = (byte)(value >> (int)(32 - shift));
+                        _buf![pos + 4] = (byte)(value >> (int)(32 - shift));
                     }
                 }
             }

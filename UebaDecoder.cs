@@ -2,7 +2,7 @@ namespace BinkaDecoder;
 
 public class UebaDecoder
 {
-    private byte[] _pktBuf;
+    private byte[]? _pktBuf;
     private uint _pktBufSize;
     private uint _pktFilled;
     private int _pktSamples;
@@ -68,7 +68,7 @@ public class UebaDecoder
                 else _pktSamples = 0;
                 if (packetSize == 0 || packetSize > _pktBufSize) return false;
                 if (offset + packetSize > size) return false;
-                System.Buffer.BlockCopy(data, (int)offset, _pktBuf, 0, packetSize);
+                System.Buffer.BlockCopy(data, (int)offset, _pktBuf!, 0, packetSize);
                 _pktFilled = packetSize;
                 offset += packetSize;
                 return true;
@@ -91,7 +91,7 @@ public class UebaDecoder
                 break;
             if (_pktFilled == 0) continue;
             float[] tempOut = new float[_frameSamples * _channels];
-            int samples = _core.Decode(_pktBuf, (int)_pktFilled, tempOut);
+            int samples = _core.Decode(_pktBuf!, (int)_pktFilled, tempOut);
             if (samples < 0) return -1;
             if (_pktSamples > 0 && samples > _pktSamples)
                 samples = _pktSamples;
