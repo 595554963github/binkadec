@@ -1175,7 +1175,7 @@ public static class BinkaTransform
     private static void RotationMainBOffset(int samples, float[] coefs, int coefsOffset, float[] table, int tableOffset)
     {
         if (coefsOffset == 0) { RotationMainB(samples, coefs, 0, table, tableOffset); return; }
-        float[] temp = new float[samples];
+        float[] temp = new float[samples + (samples >> 2)];
         System.Array.Copy(coefs, coefsOffset, temp, 0, samples);
         RotationMainB(samples, temp, 0, table, tableOffset);
         System.Array.Copy(temp, 0, coefs, coefsOffset, samples);
@@ -1330,7 +1330,7 @@ public static class BinkaTransform
             }
             else
             {
-                float[] temp = new float[samples];
+                float[] temp = new float[samples + (samples >> 2)];
                 System.Array.Copy(coefs, coefsOffset, temp, 0, samples);
                 TransformDctPre(samples, temp, table, points - samplesQrt);
                 if (samples > 512)
@@ -1370,7 +1370,7 @@ public static class BinkaTransform
             }
             else
             {
-                float[] temp = new float[samples];
+                float[] temp = new float[samples + (samples >> 2)];
                 System.Array.Copy(coefs, coefsOffset, temp, 0, samples);
                 if (samples <= 8)
                 {
@@ -1415,7 +1415,7 @@ public static class BinkaTransform
             }
             else
             {
-                float[] temp = new float[samples];
+                float[] temp = new float[samples + (samples >> 2)];
                 System.Array.Copy(coefs, coefsOffset, temp, 0, samples);
                 TransformDftPre(samples, temp, table, points - samplesQrt);
                 if (samples > 512)
@@ -1455,7 +1455,7 @@ public static class BinkaTransform
             }
             else
             {
-                float[] temp = new float[samples];
+                float[] temp = new float[samples + (samples >> 2)];
                 System.Array.Copy(coefs, coefsOffset, temp, 0, samples);
                 if (samples <= 8)
                 {
@@ -1573,7 +1573,7 @@ public static class BinkaTransform
     private static void RadDdctf(int samples, float[] coefs, int coefsOffset, int points, float[] table)
     {
         if (coefsOffset == 0) { RadDdctfInner(samples, coefs, points, table); return; }
-        float[] temp = new float[samples];
+        float[] temp = new float[samples + (samples >> 2)];
         System.Array.Copy(coefs, coefsOffset, temp, 0, samples);
         RadDdctfInner(samples, temp, points, table);
         System.Array.Copy(temp, 0, coefs, coefsOffset, samples);
@@ -1599,7 +1599,7 @@ public static class BinkaTransform
     private static void RadRdft(int samples, int flags, float[] coefs, int coefsOffset, int points, float[] table)
     {
         if (coefsOffset == 0) { RadRdftInner(samples, flags, coefs, points, table); return; }
-        float[] temp = new float[samples];
+        float[] temp = new float[samples + (samples >> 2)];
         System.Array.Copy(coefs, coefsOffset, temp, 0, samples);
         RadRdftInner(samples, flags, temp, points, table);
         System.Array.Copy(temp, 0, coefs, coefsOffset, samples);

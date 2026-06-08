@@ -20,7 +20,7 @@ public class BinkaDecoderCore
 
     private class BinkaDecoder
     {
-        public float[]? Table;
+        public float[] Table;
         public int FrameSamples;
         public float Scale;
         public int OverlapSamples;
@@ -37,8 +37,8 @@ public class BinkaDecoderCore
     private int _sampleRate;
     private int _outputSamples;
     private BinkaDecoder[] _decoders = new BinkaDecoder[MaxDecoders];
-    private float[]? _samples;
-    private float[]? _overlap;
+    private float[] _samples;
+    private float[] _overlap;
     private int _decoderCount;
 
     public BinkaDecoderCore(int sampleRate, int channels, BinkaMode mode)

@@ -2,7 +2,7 @@ namespace BinkaDecoder;
 
 public class UebaDecoder
 {
-    private byte[]? _pktBuf;
+    private byte[] _pktBuf;
     private uint _pktBufSize;
     private uint _pktFilled;
     private int _pktSamples;
@@ -61,8 +61,9 @@ public class UebaDecoder
                 if (packetSize == 0xFFFF)
                 {
                     if (offset + 4 > size) return false;
-                    packetSize = System.BitConverter.ToUInt16(data, (int)offset);
-                    _pktSamples = System.BitConverter.ToUInt16(data, (int)(offset + 2));
+                    uint limitHeader = System.BitConverter.ToUInt32(data, (int)offset);
+                    packetSize = (ushort)(limitHeader & 0xFFFF);
+                    _pktSamples = (ushort)((limitHeader >> 16) & 0xFFFF);
                     offset += 4;
                 }
                 else _pktSamples = 0;

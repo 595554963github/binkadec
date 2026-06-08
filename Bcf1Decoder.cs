@@ -2,13 +2,14 @@ namespace BinkaDecoder;
 
 public class Bcf1Decoder
 {
-    private byte[]? _pktBuf;
+    private byte[] _pktBuf;
     private uint _pktBufSize;
     private uint _pktFilled;
     private int _pktSamples;
     private BinkaDecoderCore _core;
     private int _channels;
     private int _frameSamples;
+    private uint _lastBytesConsumed;
 
     public Bcf1Decoder(int sampleRate, int channels)
     {
@@ -22,6 +23,8 @@ public class Bcf1Decoder
 
     public bool IsValid => _core != null && _core.IsValid;
 
+    public uint LastBytesConsumed => _lastBytesConsumed;
+
     public static int ParseHeader(byte[] data, out int version, out int channels, out int sampleRate, out int numSamples, out uint dataOffset)
     {
         version = 0; channels = 0; sampleRate = 0; numSamples = 0; dataOffset = 0;
@@ -31,18 +34,8 @@ public class Bcf1Decoder
         channels = data[5];
         sampleRate = System.BitConverter.ToUInt16(data, 6);
         numSamples = System.BitConverter.ToInt32(data, 8);
-        int seekEntries;
-        if (version == 1)
-        {
-            seekEntries = System.BitConverter.ToInt32(data, 20);
-            dataOffset = 24;
-        }
-        else if (version == 2)
-        {
-            seekEntries = System.BitConverter.ToUInt16(data, 20);
-            dataOffset = (uint)(24 + seekEntries * 2);
-        }
-        else return -1;
+        int seekEntries = System.BitConverter.ToUInt16(data, 20);
+        dataOffset = (uint)(24 + seekEntries * 2);
         return 0;
     }
 
@@ -57,8 +50,9 @@ public class Bcf1Decoder
         if (packetSize == 0xFFFF)
         {
             if (offset + 4 > size) return false;
-            packetSize = System.BitConverter.ToUInt16(data, (int)offset);
-            _pktSamples = System.BitConverter.ToUInt16(data, (int)(offset + 2));
+            uint limitHeader = System.BitConverter.ToUInt32(data, (int)offset);
+            packetSize = (ushort)(limitHeader & 0xFFFF);
+            _pktSamples = (ushort)((limitHeader >> 16) & 0xFFFF);
             offset += 4;
         }
         else _pktSamples = 0;
@@ -70,11 +64,13 @@ public class Bcf1Decoder
         return true;
     }
 
-    public int DecodeFrame(byte[] input, uint inputSize, float[] output)
+    public int DecodeFrame(byte[] input, uint inputOffset, uint inputSize, float[] output)
     {
         if (!IsValid || input == null || inputSize == 0) return 0;
-        uint offset = 0;
-        if (!ReadFrame(input, ref offset, inputSize)) return -1;
+        uint offset = inputOffset;
+        uint startOffset = offset;
+        if (!ReadFrame(input, ref offset, inputOffset + inputSize)) return -1;
+        _lastBytesConsumed = offset - startOffset;
         if (_pktFilled == 0) return 0;
         float[] tempOut = new float[_frameSamples * _channels];
         int samples = _core.Decode(_pktBuf!, (int)_pktFilled, tempOut);
@@ -83,6 +79,11 @@ public class Bcf1Decoder
             samples = _pktSamples;
         System.Buffer.BlockCopy(tempOut, 0, output, 0, samples * _channels * 4);
         return samples;
+    }
+
+    public int DecodeFrame(byte[] input, uint inputSize, float[] output)
+    {
+        return DecodeFrame(input, 0, inputSize, output);
     }
 
     public void Reset() => _core?.Reset();

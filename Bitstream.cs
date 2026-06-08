@@ -9,7 +9,7 @@ public class Bitstream
         0x07ffffff, 0x0fffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff
     ];
 
-    private byte[]? _buf;
+    private byte[] _buf;
     private uint _bufSize;
     private uint _bMax;
     private uint _bOff;
